@@ -1,0 +1,70 @@
+[tool.poetry]
+name = "resotonotebook"
+version = "0.1.0"
+description = "Resoto Python client library"
+authors = ["Some Engineering Inc."]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/someengineering/resotonotebook"
+repository = "https://github.com/someengineering/resotonotebook"
+packages = [
+    { include = "resotonotebook" },
+]
+classifiers = [
+    # Current project status
+    "Development Status :: 4 - Beta",
+    # Audience
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    # License information
+    "License :: OSI Approved :: Apache Software License",
+    # Supported python versions
+    "Programming Language :: Python :: 3.8",
+    # Supported OS's
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    # Extra metadata
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Topic :: Security",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/someengineering/resotonotebook/releases"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+resotoclient = "^0.1.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+safety = "^1.10.3"
+pyright = "^1.1.238"
+flake8 = "^4.0.1"
+black = ">=21.10b0"
+flake8-bandit = "^2.1.2"
+flake8-bugbear = "^21.9.2"
+pep8-naming = "^0.12.1"
+
+[tool.pyright]
+include = ["resotonotebook"]
+exclude = ["**/node_modules",
+    "**/__pycache__"
+]
+venvPath = "venv"
+
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+pythonVersion = "3.9"
+pythonPlatform = "Linux"
+
+executionEnvironments = [
+  { root = "." }
+]
+typeCheckingMode = "strict"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

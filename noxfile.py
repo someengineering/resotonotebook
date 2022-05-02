@@ -40,4 +40,6 @@ def pyright(session: Session) -> None:
     args = session.posargs or ["resotonotebook", "tests"]
     session.install(".")
     session.install("pyright", "pytest")
+    session.run("pyright", "--createstub", "resotoclient")
+    session.run("pyright", "--createstub", "graphviz")
     session.run("pyright", *args)

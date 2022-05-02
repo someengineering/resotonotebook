@@ -7,7 +7,6 @@ from enum import Enum
 from dataclasses import dataclass
 from collections import defaultdict
 import sys
-import IPython
 
 
 class ResotoNotebook:
@@ -44,12 +43,17 @@ class ResotoNotebook:
         return pd.DataFrame(nodes)
 
     def graph(
-        self, query: str, section: Optional[str] = "reported", engine: str = "sfdp"
+        self,
+        query: str,
+        section: Optional[str] = "reported",
+        engine: str = "sfdp",
+        format: str = "svg",
     ) -> graphviz.Digraph:
         digraph = graphviz.Digraph(comment=query)
+        digraph.format = format
         digraph.engine = engine
-        digraph.graph_attr = {"rankdir": "LR", "splines": "true", "overlap": "false"}
-        digraph.node_attr = {
+        digraph.graph_attr = {"rankdir": "LR", "splines": "true", "overlap": "false"}  # type: ignore
+        digraph.node_attr = {  # type: ignore
             "shape": "plain",
             "colorscheme": "paired12",
         }
@@ -73,6 +77,7 @@ class ResotoNotebook:
                 )
                 digraph.node(  # type: ignore
                     name=js_get(elem, ["id"]),
+                    # label=rd.name,
                     label=render_resource(rd, color),
                     shape="plain",
                 )
@@ -84,10 +89,14 @@ class ResotoNotebook:
     def cli_execute(self, query: str, section: str = "reported") -> pd.DataFrame:
         iter = self.client.cli_execute(query, self.resoto_graph, section)
 
+        normalize = False
+
         def extract_node(node: JsValue) -> Optional[JsValue]:
             if isinstance(node, dict):
                 reported = node.get("reported")
                 if not isinstance(reported, Dict):
+                    nonlocal normalize
+                    normalize = True
                     return node
                 reported["account_id"] = js_find(
                     node,
@@ -105,7 +114,10 @@ class ResotoNotebook:
             return node
 
         nodes = [extract_node(node) for node in iter]
-        return pd.DataFrame(nodes)
+        if normalize:
+            return pd.json_normalize(nodes)  # type: ignore
+        else:
+            return pd.DataFrame(nodes)
 
 
 class ResourceKind(Enum):
@@ -198,11 +210,3 @@ def js_get(node: JsObject, path: List[str]) -> str:
     if result is None:
         raise ValueError(f"Path {path} not found in {node}")
     return result
-
-
-def render_png(graph: graphviz.Digraph) -> None:
-    IPython.display.display_png(graph)  # type: ignore
-
-
-def render_svg(graph: graphviz.Digraph) -> None:
-    IPython.display.display_svg(graph)  # type: ignore

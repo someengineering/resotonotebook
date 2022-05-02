@@ -34,8 +34,13 @@ classifiers = [
 Changelog = "https://github.com/someengineering/resotonotebook/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-resotoclient = "^0.1.5"
+python = "^3.8"
+resotoclient = "^0.1.6"
+pandas = "^1.4.2"
+graphviz = "^0.20"
+plotly = "^5.7.0"
+nbformat = "^5.3.0"
+pandas-stubs = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

@@ -4,7 +4,7 @@ import js
 from typing import Optional, List, Dict
 from resotoclient import rnd_str
 from resotoclient.jwt_utils import encode_jwt_to_headers
-from client import Client
+from resotonotebook.client import Client
 from resotoclient.models import JsObject, JsValue
 
 

@@ -1,25 +1,21 @@
 from typing import Dict, Optional, List
 import pandas as pd
-from resotoclient import ResotoClient
 from resotoclient.models import JsObject, JsValue
 import graphviz
 from enum import Enum
 from dataclasses import dataclass
 from collections import defaultdict
+from resotonotebook.client import get_client
 import sys
 
 
 class ResotoNotebook:
-    def __init__(
-        self, url: str, psk: Optional[str], resoto_graph: str = "resoto"
-    ) -> None:
-        self.client = ResotoClient(url, psk)
+    def __init__(self, url: str, psk: Optional[str], resoto_graph: str = "resoto") -> None:
+        self.client = get_client(url, psk)
         self.resoto_graph = resoto_graph
 
-    def search(self, query: str, section: Optional[str] = "reported") -> pd.DataFrame:
-        iter = self.client.search_list(
-            search=query, section=section, graph=self.resoto_graph
-        )
+    async def search(self, query: str, section: Optional[str] = "reported") -> pd.DataFrame:
+        iter = await self.client.search_list(search=query, section=section, graph=self.resoto_graph)
 
         def extract_node(node: JsObject) -> Optional[JsObject]:
             reported = node.get("reported")
@@ -42,7 +38,7 @@ class ResotoNotebook:
         nodes = [extract_node(node) for node in iter]
         return pd.DataFrame(nodes)
 
-    def graph(
+    async def graph(
         self,
         query: str,
         section: Optional[str] = "reported",
@@ -60,9 +56,7 @@ class ResotoNotebook:
         cit = iter(range(0, sys.maxsize))
         colors: Dict[str, int] = defaultdict(lambda: (next(cit) % 12) + 1)
 
-        results = self.client.search_graph(
-            search=query, section=section, graph=self.resoto_graph
-        )
+        results = await self.client.search_graph(search=query, section=section, graph=self.resoto_graph)
 
         for elem in results:
             if elem.get("type") == "node":
@@ -86,8 +80,8 @@ class ResotoNotebook:
 
         return digraph
 
-    def cli_execute(self, query: str, section: str = "reported") -> pd.DataFrame:
-        iter = self.client.cli_execute(query, self.resoto_graph, section)
+    async def cli_execute(self, query: str, section: str = "reported") -> pd.DataFrame:
+        iter = await self.client.cli_execute(query, self.resoto_graph, section)
 
         normalize = False
 

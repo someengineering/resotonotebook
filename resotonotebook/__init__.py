@@ -1,36 +1,17 @@
-from typing import Dict, Optional, List, Iterator
+from typing import Dict, Optional, List
 import pandas as pd
-from resotoclient import ResotoClient
 from resotoclient.models import JsObject, JsValue
 import graphviz
 from enum import Enum
 from dataclasses import dataclass
 from collections import defaultdict
+from resotonotebook.client import get_client
 import sys
-
-
-class AsyncResotoClient:
-    def __init__(self, client: ResotoClient):
-        self.client = client
-
-    async def search_list(self, search: str, section: Optional[str], graph: str) -> Iterator[JsObject]:
-        return self.client.search_list(search=search, section=section, graph=graph)
-
-    async def search_graph(self, search: str, section: Optional[str], graph: str) -> Iterator[JsObject]:
-        return self.client.search_graph(search=search, section=section, graph=graph)
-
-    async def cli_execute(self, query: str, graph: str, section: Optional[str]) -> Iterator[JsValue]:
-        return self.client.cli_execute(command=query, graph=graph, section=section)
 
 
 class ResotoNotebook:
     def __init__(self, url: str, psk: Optional[str], resoto_graph: str = "resoto") -> None:
-        if sys.platform == "emscripten":
-            from pyodide_client import PyodideResotoClient
-
-            self.client = PyodideResotoClient(url, psk)
-        else:
-            self.client = AsyncResotoClient(ResotoClient(url, psk))
+        self.client = get_client(url, psk)
         self.resoto_graph = resoto_graph
 
     async def search(self, query: str, section: Optional[str] = "reported") -> pd.DataFrame:

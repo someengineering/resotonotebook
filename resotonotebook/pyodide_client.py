@@ -1,11 +1,14 @@
+# type: ignore
 import pyodide
 import js
 from typing import Optional, List, Dict
 from resotoclient import rnd_str
 from resotoclient.jwt_utils import encode_jwt_to_headers
+from client import Client
+from resotoclient.models import JsObject, JsValue
 
 
-class PyodideResotoClient:
+class PyodideResotoClient(Client):
     def __init__(self, url: str, psk: Optional[str]):
         self.url = url
         self.psk = psk
@@ -20,7 +23,7 @@ class PyodideResotoClient:
 
         return headers
 
-    async def search_list(self, search: str, section: str, graph: str) -> List[JsObject]:
+    async def search_list(self, search: str, section: Optional[str], graph: str) -> List[JsObject]:
         path = f"/graph/{graph}/search/list"
 
         url = js.URL.new(path, js.location.origin)
@@ -46,7 +49,7 @@ class PyodideResotoClient:
 
         return await call(url, options)
 
-    async def search_graph(self, search: str, section: str, graph: str) -> List[JsObject]:
+    async def search_graph(self, search: str, section: Optional[str], graph: str) -> List[JsObject]:
         path = f"/graph/{graph}/search/graph"
 
         url = js.URL.new(path, js.location.origin)

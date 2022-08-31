@@ -14,6 +14,10 @@ class ResotoNotebook:
         self.client = get_client(url, psk)
         self.resoto_graph = resoto_graph
 
+    @staticmethod
+    def with_psk(psk: Optional[str]) -> "ResotoNotebook":
+        return ResotoNotebook("http://localhost:8900", psk)
+
     async def search(self, query: str, section: Optional[str] = "reported") -> pd.DataFrame:
         iter = await self.client.search_list(search=query, section=section, graph=self.resoto_graph)
 

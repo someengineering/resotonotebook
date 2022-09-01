@@ -9,7 +9,7 @@ pip install resotonotebook
 
 ## Installation from scratch
 
-```
+```bash
 # create a new venv
 python3 -m venv venv --prompt "resotonotebook"
 # use the created venv
